@@ -6,12 +6,20 @@
 package Vista;
 
 import Controlador.Conexion;
+import Controlador.Gestion;
+import java.awt.HeadlessException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
@@ -20,15 +28,19 @@ import javax.swing.JOptionPane;
  */
 public class Nuevo extends javax.swing.JDialog {
 
-    /**
-     * Creates new form Nuevo
-     */
     
+    
+    JFileChooser seleccinado = new JFileChooser();
+    File archivo;
+    byte[] bytesImge;
+    Gestion gestion = new Gestion();
+    String url="\\\\192.168.1.64\\coesicydet\\System\\";
     Conexion con =  new Conexion();
     public Nuevo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
+        consulta_id();
     }
     private boolean Validate(){
         boolean verificar;
@@ -47,7 +59,7 @@ public class Nuevo extends javax.swing.JDialog {
       Connection reg = con.conctarDB();
       String sql;
       String Mensaje = "";
-      sql = "INSERT INTO entrada(id,num_oficio,asunto,fecha,destinatario,descripcion,remitente,aneso) VALUES (NULL,?,?,?,?,?,?,?)";
+      sql = "INSERT INTO entrada(id,num_oficio,asunto,fecha,destinatario,descripcion,remitente,aneso,img) VALUES (NULL,?,?,?,?,?,?,?,?)";
       Mensaje = "Se han insertado de manera Exitosa";
         try {
             String fecha = txtFecha.getCalendar().get(Calendar.YEAR)+"/"
@@ -62,6 +74,7 @@ public class Nuevo extends javax.swing.JDialog {
             pst.setString(5, txtDescripcion.getText());
             pst.setString(6, txtRemitente.getText());
             pst.setString(7, txtAneso.getText());
+            pst.setString(8, url+generarNombre());
             
             int n = pst.executeUpdate();
              if (n>0) {
@@ -99,6 +112,9 @@ public class Nuevo extends javax.swing.JDialog {
         txtDescripcion = new javax.swing.JTextArea();
         txtRemitente = new javax.swing.JTextField();
         txtAneso = new javax.swing.JTextField();
+        next_num = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        btCargarImgEntradaFomix = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         btGuardarEntrada = new javax.swing.JButton();
         btCancelarEntrada = new javax.swing.JButton();
@@ -148,6 +164,20 @@ public class Nuevo extends javax.swing.JDialog {
 
         txtAneso.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
 
+        next_num.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
+        next_num.setText("N° Siguiente: ");
+
+        jLabel10.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
+        jLabel10.setText("Documento");
+
+        btCargarImgEntradaFomix.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
+        btCargarImgEntradaFomix.setText("Cargar Imagen");
+        btCargarImgEntradaFomix.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCargarImgEntradaFomixActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -161,26 +191,32 @@ public class Nuevo extends javax.swing.JDialog {
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtDestinatario, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel4))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtNumeroOficio, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtAsunto, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel8))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(txtAneso, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtRemitente, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel2)
+                                        .addComponent(jLabel3)
+                                        .addComponent(jLabel4))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(txtAsunto, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                                        .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtNumeroOficio))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(next_num, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel6)
+                                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING))
+                                        .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(txtAneso, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(txtRemitente, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(btCargarImgEntradaFomix, javax.swing.GroupLayout.Alignment.LEADING))))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(200, 200, 200)
                         .addComponent(jLabel1)))
@@ -194,7 +230,8 @@ public class Nuevo extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txtNumeroOficio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtNumeroOficio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(next_num))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -210,11 +247,9 @@ public class Nuevo extends javax.swing.JDialog {
                     .addComponent(txtDestinatario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel6)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(txtRemitente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -222,7 +257,11 @@ public class Nuevo extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(txtAneso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(btCargarImgEntradaFomix))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -267,7 +306,7 @@ public class Nuevo extends javax.swing.JDialog {
                     .addComponent(btCancelarEntrada)
                     .addComponent(btGuardarEntrada)
                     .addComponent(jLabel9))
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -280,9 +319,9 @@ public class Nuevo extends javax.swing.JDialog {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -291,13 +330,53 @@ public class Nuevo extends javax.swing.JDialog {
     private void btGuardarEntradaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btGuardarEntradaActionPerformed
         if (Validate()) {
             setFile();
+            this.dispose();
+            new MainAdmin().setVisible(true);
         }
     }//GEN-LAST:event_btGuardarEntradaActionPerformed
 
     private void btCancelarEntradaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelarEntradaActionPerformed
         this.dispose();
     }//GEN-LAST:event_btCancelarEntradaActionPerformed
-
+    
+    private void btCargarImgEntradaFomixActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCargarImgEntradaFomixActionPerformed
+        if (seleccinado.showDialog(this, "Abrir archivo")==JFileChooser.APPROVE_OPTION) {
+            archivo = seleccinado.getSelectedFile();
+            if (archivo.canRead()) {
+                if (archivo.getName().endsWith("jpg")||archivo.getName().endsWith("png")) {
+                    bytesImge = gestion.AbrirAImagen(archivo);
+                    System.out.println(archivo);
+                    
+                    
+                    String respuesta = gestion.GuardarAImagen(new File(url+generarNombre()), bytesImge);
+                }else{
+                    JOptionPane.showMessageDialog(null, "Seleccione una imagen con el tipo de formato jpg o png");
+                }
+            }else{
+                    JOptionPane.showMessageDialog(null, "Seleccione una imagen con el tipo de formato jpg o png");
+                }
+        }
+    }//GEN-LAST:event_btCargarImgEntradaFomixActionPerformed
+    public String generarNombre(){
+        String nom="";
+        con.conectar();
+        int next = 0;
+            Statement st = con.getStatement();
+            try {
+                ResultSet rs = st.executeQuery("select * from entrada");
+                rs.beforeFirst();
+                while (rs.next()) {
+                next= Integer.valueOf(rs.getString("id"));
+            }
+                rs.close();
+                st.close();
+                nom = "Fomix_"+(next+1)+"_2016.jpg";
+            } catch (SQLException | HeadlessException e) {
+                e.printStackTrace();
+            }
+        return nom;
+    
+    }
     /**
      * @param args the command line arguments
      */
@@ -342,8 +421,10 @@ public class Nuevo extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btCancelarEntrada;
+    private javax.swing.JButton btCargarImgEntradaFomix;
     private javax.swing.JButton btGuardarEntrada;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -355,6 +436,7 @@ public class Nuevo extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel next_num;
     private javax.swing.JTextField txtAneso;
     private javax.swing.JTextField txtAsunto;
     private javax.swing.JTextArea txtDescripcion;
@@ -363,4 +445,26 @@ public class Nuevo extends javax.swing.JDialog {
     private javax.swing.JTextField txtNumeroOficio;
     private javax.swing.JTextField txtRemitente;
     // End of variables declaration//GEN-END:variables
+    public void consulta_id(){
+       con.conectar();
+       int next = 0;
+       //SELECT * FROM entrada WHERE id ORDER BY id ASC
+       /*Validacion */
+            Statement st = con.getStatement();
+            try {
+                 
+                ResultSet rs = st.executeQuery("select * from entrada");
+                rs.beforeFirst();
+                while (rs.next()) {
+                next= Integer.valueOf(rs.getString("id"));
+                
+                }
+                rs.close();
+                st.close();
+                next_num.setText("N° Anterior: "+next);
+                txtNumeroOficio.setText("Fomix/"+(next+1)+"/2016");
+            } catch (SQLException | HeadlessException e) {
+                e.printStackTrace();
+            }
+    }
 }

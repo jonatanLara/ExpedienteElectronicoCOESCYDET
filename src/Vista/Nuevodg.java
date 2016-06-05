@@ -24,14 +24,16 @@ import javax.swing.JOptionPane;
  *
  * @author Jonatan Lara
  */
-public class SalidaFomix extends javax.swing.JDialog {
+public class Nuevodg extends javax.swing.JDialog {
+
     JFileChooser seleccinado = new JFileChooser();
     File archivo;
     byte[] bytesImge;
     Gestion gestion = new Gestion();
     String url="\\\\192.168.1.64\\coesicydet\\System\\";
+    
     Conexion con =  new Conexion();
-    public SalidaFomix(java.awt.Frame parent, boolean modal) {
+    public Nuevodg(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
@@ -49,11 +51,11 @@ public class SalidaFomix extends javax.swing.JDialog {
         return verificar;
     } 
     public void setFile(){
-     con.conectar();
+      con.conectar();
       Connection reg = con.conctarDB();
       String sql;
       String Mensaje = "";
-      sql = "INSERT INTO fomix(id,num_oficio,asunto,fecha,destinatario,descripcion,remitente,aneso,img) VALUES (NULL,?,?,?,?,?,?,?,?)";
+      sql = "INSERT INTO entradadg(id,num_oficio,asunto,fecha,destinatario,descripcion,remitente,aneso,img) VALUES (NULL,?,?,?,?,?,?,?,?)";
       Mensaje = "Se han insertado de manera Exitosa";
         try {
             String fecha = txtFecha.getCalendar().get(Calendar.YEAR)+"/"
@@ -69,7 +71,6 @@ public class SalidaFomix extends javax.swing.JDialog {
             pst.setString(6, txtRemitente.getText());
             pst.setString(7, txtAneso.getText());
             pst.setString(8, url+generarNombre());
-            
             int n = pst.executeUpdate();
              if (n>0) {
                 JOptionPane.showMessageDialog(null, Mensaje);
@@ -78,7 +79,6 @@ public class SalidaFomix extends javax.swing.JDialog {
             Logger.getLogger(SalidaDG.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, ex);
         }
-      
       
     }
     /**
@@ -107,15 +107,20 @@ public class SalidaFomix extends javax.swing.JDialog {
         txtDescripcion = new javax.swing.JTextArea();
         txtRemitente = new javax.swing.JTextField();
         txtAneso = new javax.swing.JTextField();
-        btGuardar = new javax.swing.JButton();
-        btCancelar = new javax.swing.JButton();
+        btCargarImgEntradaFomix = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        btGuardarEntrada = new javax.swing.JButton();
+        btCancelarEntrada = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
-        btCargarImagenSalidaFomix = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setBackground(new java.awt.Color(255, 255, 255));
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel1.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
-        jLabel1.setText("Registro de Oficio de Salida Fomix");
+        jLabel1.setText("Registro de Oficio de Entrada");
 
         jLabel2.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
         jLabel2.setText("N° de Oficio");
@@ -153,6 +158,17 @@ public class SalidaFomix extends javax.swing.JDialog {
 
         txtAneso.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
 
+        btCargarImgEntradaFomix.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
+        btCargarImgEntradaFomix.setText("Cargar Imagen");
+        btCargarImgEntradaFomix.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCargarImgEntradaFomixActionPerformed(evt);
+            }
+        });
+
+        jLabel10.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
+        jLabel10.setText("Documento");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -179,17 +195,20 @@ public class SalidaFomix extends javax.swing.JDialog {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel6)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel8))
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(txtAneso, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtRemitente, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(txtAneso, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(txtRemitente, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(btCargarImgEntradaFomix)))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(184, 184, 184)
+                        .addGap(200, 200, 200)
                         .addComponent(jLabel1)))
-                .addContainerGap(82, Short.MAX_VALUE))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -215,11 +234,9 @@ public class SalidaFomix extends javax.swing.JDialog {
                     .addComponent(txtDestinatario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel6)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(txtRemitente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -227,101 +244,104 @@ public class SalidaFomix extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(txtAneso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel10)
+                    .addComponent(btCargarImgEntradaFomix))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        btGuardar.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
-        btGuardar.setText("Guardar");
-        btGuardar.addActionListener(new java.awt.event.ActionListener() {
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        btGuardarEntrada.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
+        btGuardarEntrada.setText("Guardar");
+        btGuardarEntrada.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btGuardarActionPerformed(evt);
+                btGuardarEntradaActionPerformed(evt);
             }
         });
 
-        btCancelar.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
-        btCancelar.setText("Cancelar");
-        btCancelar.addActionListener(new java.awt.event.ActionListener() {
+        btCancelarEntrada.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
+        btCancelarEntrada.setText("Cancelar");
+        btCancelarEntrada.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btCancelarActionPerformed(evt);
+                btCancelarEntradaActionPerformed(evt);
             }
         });
 
-        jLabel9.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
-        jLabel9.setText("Documento");
+        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 153, 0));
 
-        btCargarImagenSalidaFomix.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
-        btCargarImagenSalidaFomix.setText("Cargar Imagen");
-        btCargarImagenSalidaFomix.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btCargarImagenSalidaFomixActionPerformed(evt);
-            }
-        });
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btGuardarEntrada)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btCancelarEntrada)
+                .addGap(89, 89, 89))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btCancelarEntrada)
+                    .addComponent(btGuardarEntrada)
+                    .addComponent(jLabel9))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btGuardar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btCancelar)
-                .addGap(82, 82, 82))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(74, 74, 74)
-                .addComponent(jLabel9)
-                .addGap(18, 18, 18)
-                .addComponent(btCargarImagenSalidaFomix)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(btCargarImagenSalidaFomix))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btGuardar)
-                    .addComponent(btCancelar))
-                .addContainerGap())
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btGuardarActionPerformed
+    private void btGuardarEntradaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btGuardarEntradaActionPerformed
         if (Validate()) {
             setFile();
+            this.dispose();
         }
-    }//GEN-LAST:event_btGuardarActionPerformed
+    }//GEN-LAST:event_btGuardarEntradaActionPerformed
 
-    private void btCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelarActionPerformed
+    private void btCancelarEntradaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelarEntradaActionPerformed
         this.dispose();
-    }//GEN-LAST:event_btCancelarActionPerformed
+    }//GEN-LAST:event_btCancelarEntradaActionPerformed
 
-    private void btCargarImagenSalidaFomixActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCargarImagenSalidaFomixActionPerformed
+    private void btCargarImgEntradaFomixActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCargarImgEntradaFomixActionPerformed
         if (seleccinado.showDialog(this, "Abrir archivo")==JFileChooser.APPROVE_OPTION) {
             archivo = seleccinado.getSelectedFile();
             if (archivo.canRead()) {
                 if (archivo.getName().endsWith("jpg")||archivo.getName().endsWith("png")) {
                     bytesImge = gestion.AbrirAImagen(archivo);
                     System.out.println(archivo);
-                    
-                    
+
                     String respuesta = gestion.GuardarAImagen(new File(url+generarNombre()), bytesImge);
                 }else{
                     JOptionPane.showMessageDialog(null, "Seleccione una imagen con el tipo de formato jpg o png");
                 }
             }else{
-                    JOptionPane.showMessageDialog(null, "Seleccione una imagen con el tipo de formato jpg o png");
-                }
+                JOptionPane.showMessageDialog(null, "Seleccione una imagen con el tipo de formato jpg o png");
+            }
         }
-    }//GEN-LAST:event_btCargarImagenSalidaFomixActionPerformed
+    }//GEN-LAST:event_btCargarImgEntradaFomixActionPerformed
 
     /**
      * @param args the command line arguments
@@ -340,13 +360,13 @@ public class SalidaFomix extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SalidaFomix.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Nuevodg.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SalidaFomix.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Nuevodg.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SalidaFomix.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Nuevodg.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SalidaFomix.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Nuevodg.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -354,7 +374,7 @@ public class SalidaFomix extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SalidaFomix dialog = new SalidaFomix(new javax.swing.JFrame(), true);
+                Nuevodg dialog = new Nuevodg(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -367,10 +387,11 @@ public class SalidaFomix extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btCancelar;
-    private javax.swing.JButton btCargarImagenSalidaFomix;
-    private javax.swing.JButton btGuardar;
+    private javax.swing.JButton btCancelarEntrada;
+    private javax.swing.JButton btCargarImgEntradaFomix;
+    private javax.swing.JButton btGuardarEntrada;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -380,6 +401,7 @@ public class SalidaFomix extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField txtAneso;
     private javax.swing.JTextField txtAsunto;
@@ -395,14 +417,14 @@ public class SalidaFomix extends javax.swing.JDialog {
         int next = 0;
             Statement st = con.getStatement();
             try {
-                ResultSet rs = st.executeQuery("select * from fomix");
+                ResultSet rs = st.executeQuery("select * from entradadg");
                 rs.beforeFirst();
                 while (rs.next()) {
                 next= Integer.valueOf(rs.getString("id"));
             }
                 rs.close();
                 st.close();
-                nom = "Fomix_"+(next+1)+"_2016.jpg";
+                nom = "Coesicydet_"+(next+1)+"_2016.jpg";
             } catch (SQLException | HeadlessException e) {
                 e.printStackTrace();
             }

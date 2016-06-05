@@ -6,12 +6,18 @@
 package Vista;
 
 import Controlador.Conexion;
+import Controlador.Gestion;
+import java.awt.HeadlessException;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
@@ -19,7 +25,11 @@ import javax.swing.JOptionPane;
  * @author Jonatan Lara
  */
 public class SalidaDG extends javax.swing.JDialog {
-
+    JFileChooser seleccinado = new JFileChooser();
+    File archivo;
+    byte[] bytesImge;
+    Gestion gestion = new Gestion();
+    String url="\\\\192.168.1.64\\coesicydet\\System\\";
     Conexion con =  new Conexion();
     public SalidaDG(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -43,7 +53,7 @@ public class SalidaDG extends javax.swing.JDialog {
       Connection reg = con.conctarDB();
       String sql;
       String Mensaje = "";
-      sql = "INSERT INTO direciong(id,num_oficio,asunto,fecha,destinatario,descripcion,remitente,aneso) VALUES (NULL,?,?,?,?,?,?,?)";
+      sql = "INSERT INTO direciong(id,num_oficio,asunto,fecha,destinatario,descripcion,remitente,aneso,img) VALUES (NULL,?,?,?,?,?,?,?,?)";
       Mensaje = "Se han insertado de manera Exitosa";
         try {
             String fecha = txtFecha.getCalendar().get(Calendar.YEAR)+"/"
@@ -58,6 +68,7 @@ public class SalidaDG extends javax.swing.JDialog {
             pst.setString(5, txtDescripcion.getText());
             pst.setString(6, txtRemitente.getText());
             pst.setString(7, txtAneso.getText());
+            pst.setString(8, url+generarNombre());
             
             int n = pst.executeUpdate();
              if (n>0) {
@@ -98,6 +109,8 @@ public class SalidaDG extends javax.swing.JDialog {
         txtAneso = new javax.swing.JTextField();
         btGuardar = new javax.swing.JButton();
         btCancelar = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        btCargarImagenSalidaDG = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -233,6 +246,17 @@ public class SalidaDG extends javax.swing.JDialog {
             }
         });
 
+        jLabel9.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
+        jLabel9.setText("Documento");
+
+        btCargarImagenSalidaDG.setFont(new java.awt.Font("Ubuntu", 0, 11)); // NOI18N
+        btCargarImagenSalidaDG.setText("Cargar Imagen");
+        btCargarImagenSalidaDG.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCargarImagenSalidaDGActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -243,7 +267,13 @@ public class SalidaDG extends javax.swing.JDialog {
                 .addComponent(btGuardar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btCancelar)
-                .addGap(85, 85, 85))
+                .addGap(86, 86, 86))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(84, 84, 84)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btCargarImagenSalidaDG)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -252,9 +282,13 @@ public class SalidaDG extends javax.swing.JDialog {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(btCargarImagenSalidaDG))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btGuardar)
                     .addComponent(btCancelar))
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -269,6 +303,25 @@ public class SalidaDG extends javax.swing.JDialog {
     private void btCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelarActionPerformed
         this.dispose();
     }//GEN-LAST:event_btCancelarActionPerformed
+
+    private void btCargarImagenSalidaDGActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCargarImagenSalidaDGActionPerformed
+        if (seleccinado.showDialog(this, "Abrir archivo")==JFileChooser.APPROVE_OPTION) {
+            archivo = seleccinado.getSelectedFile();
+            if (archivo.canRead()) {
+                if (archivo.getName().endsWith("jpg")||archivo.getName().endsWith("png")) {
+                    bytesImge = gestion.AbrirAImagen(archivo);
+                    System.out.println(archivo);
+                    
+                    
+                    String respuesta = gestion.GuardarAImagen(new File(url+generarNombre()), bytesImge);
+                }else{
+                    JOptionPane.showMessageDialog(null, "Seleccione una imagen con el tipo de formato jpg o png");
+                }
+            }else{
+                    JOptionPane.showMessageDialog(null, "Seleccione una imagen con el tipo de formato jpg o png");
+                }
+        }
+    }//GEN-LAST:event_btCargarImagenSalidaDGActionPerformed
 
     /**
      * @param args the command line arguments
@@ -317,6 +370,7 @@ public class SalidaDG extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btCancelar;
+    private javax.swing.JButton btCargarImagenSalidaDG;
     private javax.swing.JButton btGuardar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -326,6 +380,7 @@ public class SalidaDG extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField txtAneso;
@@ -336,4 +391,24 @@ public class SalidaDG extends javax.swing.JDialog {
     private javax.swing.JTextField txtNumeroOficio;
     private javax.swing.JTextField txtRemitente;
     // End of variables declaration//GEN-END:variables
+    public String generarNombre(){
+        String nom="";
+        con.conectar();
+        int next = 0;
+            Statement st = con.getStatement();
+            try {
+                ResultSet rs = st.executeQuery("select * from direciong");
+                rs.beforeFirst();
+                while (rs.next()) {
+                next= Integer.valueOf(rs.getString("id"));
+            }
+                rs.close();
+                st.close();
+                nom = "Fomix_"+(next+1)+"_2016.jpg";
+            } catch (SQLException | HeadlessException e) {
+                e.printStackTrace();
+            }
+        return nom;
+    
+    }
 }
