@@ -19,10 +19,10 @@ import javax.swing.JOptionPane;
  */
 public class Conexion {
     
-    public String bd = "BD_Coesicydet";
-    public String login = "root";
-    public String password = "";
-    public String url = "jdbc:mysql://localhost/" + bd;
+    public String bd = "dbcoesicydet";
+    public String login = "usuario";//user
+    public String password = "contraseña";//contraseña
+    public String url = "jdbc:mysql://192.168.1.64:3306/" + bd;
     Connection conn ;
     Statement sentencia = null;
     boolean isEmpyConection;
