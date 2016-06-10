@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
 public class MainFrame extends javax.swing.JFrame {
 
     private String usuario;
-    private String password;
+    private char[] password;
     private Conexion conn;
     public MainFrame() {
         initComponents();
@@ -144,17 +144,19 @@ public class MainFrame extends javax.swing.JFrame {
         conn = new Conexion();
         conn.conectar();
         usuario = txtUser.getText();
-        password = txtPass.getText();
-        if (usuario.isEmpty()||password.isEmpty()) {
+        password = txtPass.getPassword();
+        String pass;
+        if (usuario.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Ingrese su nombre de usuario y contraseña");
         }else{
             /*Validacion */
             Statement st = conn.getStatement();
+            pass = new String(password);
             try {
-                 ResultSet rs = st.executeQuery("SELECT * FROM usuarios WHERE nom_usuario='" +usuario + "' AND password ='" + password + "'");
-                 rs.last();
-
-                 int encontrado = rs.getRow();
+                try (ResultSet rs = st.executeQuery("SELECT * FROM usuarios WHERE nom_usuario='" +usuario + "' AND password ='" + pass + "'")) {
+                    rs.last();
+                    
+                    int encontrado = rs.getRow();
                     if (encontrado == 1) {
                         //System.out.println(rs.getString("usuario_id"));
                         MainAdmin vp = new MainAdmin();
@@ -164,11 +166,9 @@ public class MainFrame extends javax.swing.JFrame {
                     } else {
                         JOptionPane.showMessageDialog(null, "Sus datos son incorrectos, reviselos");
                     }
-
-                rs.close();
+                }
                 st.close();
             } catch (SQLException | HeadlessException e) {
-                e.printStackTrace();
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -201,10 +201,8 @@ public class MainFrame extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new MainFrame().setVisible(true);
         });
     }
 

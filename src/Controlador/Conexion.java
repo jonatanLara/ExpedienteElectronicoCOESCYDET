@@ -6,6 +6,8 @@
 package Controlador;
 
 
+
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -21,7 +23,7 @@ public class Conexion {
     
     public String bd = "dbcoesicydet";
     public String login = "usuario";//user
-    public String password = "contraseña";//contraseña
+    public String password = "consejo2016";//contraseña :3306
     public String url = "jdbc:mysql://192.168.1.64:3306/" + bd;
     Connection conn ;
     Statement sentencia = null;
@@ -33,7 +35,7 @@ public class Conexion {
          conn = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(url,login,password);
+            conn = (Connection) DriverManager.getConnection(url,login,password);
         } catch (ClassNotFoundException | SQLException e) {
             JOptionPane.showMessageDialog(null, "problema al conetar"+e);
         }
@@ -50,16 +52,16 @@ public class Conexion {
         try {
             String DSN = url;
             String user = login;
-            conn =DriverManager.getConnection(DSN,user,password);
+            conn =(Connection) DriverManager.getConnection(DSN,user,password);
         } catch (Exception e) {
-            System.out.println("No esta activa la conexion");
+            JOptionPane.showMessageDialog(null, "No esta activa la conexion "+e);
         }
         try {
             sentencia = (Statement) conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
             ResultSet.CONCUR_READ_ONLY);
             //notify.notifyConection("Conexion ", "Conexion exitosa",true);
         } catch (Exception e) {
-            String er="se produjo un problema al conectar con la base de datos";
+            JOptionPane.showMessageDialog(null, "se produjo un problema al conectar con la base de datos");
             
         }
     }
